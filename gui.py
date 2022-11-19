@@ -73,8 +73,8 @@ def create_nodes(levels):
     radius=diameter
     for lvl in range(levels):
         #MIN MAX:
-        if(lvl%2==0): Max = True
-        else:Max = False
+        if(lvl%2==0): Max = False
+        else:Max = True
         #totlvl <- 1,2,4,8,16
         totlvl=2**lvl
         start =(width//totlvl)/2
@@ -167,7 +167,7 @@ def MiniMax(node, depth):
             text = font.render(f"{node.value}", True, (255,255,255))
             win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))            
             pygame.display.update()                    
-            time.sleep(500000)
+            
         else:
             if(depth == 4):
                 pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
@@ -221,7 +221,65 @@ def drawPath(node,W,L):
     text = font.render(f"{L.value}", True, (255,255,255))
     win.blit(text,((L.x-(W.radius/4)),(L.y-(W.radius/4))))
       
+def NegaMax(node, player, depth):
+        time.sleep(1)
+        if (depth == 0):
+            pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
+            pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
+            pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
+            pygame.display.update()
+            NegaMax(node.getLeft(),-1*player,node.getDepth()+1)
+            pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
+            pygame.display.update()
+            NegaMax(node.getRight(),-1*player,node.getDepth()+1)
+            L=node.getLeft()
+            R=node.getRight()
+            if(node.value==None):
+                if((-1*R.getValue())>(-1*L.getValue())):
+                    node.value=-1*R.value
+                    drawPath(node,R,L)
+                else:
+                    node.value=-1*L.value
+                    drawPath(node,L,R)
 
+            
+            pygame.draw.circle(win,(150,0,0),node.getLoc(),node.getRaduis())
+            font = pygame.font.Font('freesansbold.ttf',20)
+            text = font.render(f"{node.value}", True, (255,255,255))
+            win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))            
+            pygame.display.update()                    
+            time.sleep(500000)
+        else:
+            if(depth == 4):
+                if(player==-1):node.value=-1*node.value
+                pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
+                font = pygame.font.Font('freesansbold.ttf',20)
+                text = font.render(f"{node.value}", True, (255,255,255))
+                win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))
+                pygame.display.update()
+
+            else:
+                pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
+                pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
+                pygame.display.update()
+                NegaMax(node.getLeft(),-1*player,node.getDepth()+1)
+                pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
+                pygame.display.update()
+                NegaMax(node.getRight(),-1*player,node.getDepth()+1)
+                L=node.getLeft()
+                R=node.getRight()
+                if(node.value==None):
+                         if((-1*R.getValue())>(-1*L.getValue())):
+                            node.value=-1*R.value
+                            drawPath(node,R,L)
+                         else:
+                            node.value=-1*L.value
+                            drawPath(node,L,R)
+                font = pygame.font.Font('freesansbold.ttf',20)
+                text = font.render(f"{node.value}", True, (255,255,255))
+                win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))
+                pygame.display.update()
+             
 
 
                 
@@ -238,5 +296,11 @@ levels=5
 nodes= create_nodes(5)
 draw(levels,nodes)
 while(True):
-    
-    MiniMax(nodes[0],0)
+   # MiniMax(nodes[0],0)
+   # time.sleep(5)
+   # draw(levels,nodes)
+
+    if(nodes[0].getMAX()==True):
+        NegaMax(nodes[0],1,0)
+    else:
+        NegaMax(nodes[0],-1,0)
