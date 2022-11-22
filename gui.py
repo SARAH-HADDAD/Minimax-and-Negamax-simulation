@@ -2,7 +2,7 @@ import pygame
 import math
 import time
 width=1300
-length=750
+length=760
 win=pygame
 win=pygame.display.set_mode((1450,800))
 pygame.display.set_caption("GUI")
@@ -116,11 +116,11 @@ def draw_lines(nodes):
 def draw(levels,nodes):
     draw_lines(nodes)
     draw_circles(levels,nodes) 
-    font = pygame.font.Font('freesansbold.ttf',25)
+    font = pygame.font.Font('freesansbold.ttf',15)
     for i in range(2**(levels-1)): 
-      pygame.draw.rect(win,(50,50,50),[(((width//16)/4)+(width//16)*i),740,((width//16)/1.75),((width//16)/1.75)]) 
+      pygame.draw.rect(win,(30,30,30),[(((width//16)/4)+(width//16)*i),750,((width//16)/2),((width//16)/2)]) 
       text = font.render(f"{values[i]}", True, (255,255,255))
-      win.blit(text,(((((width//16)/4)+(width//16)*i)+(((width//16)/1.75)/4)),(740+(((width//16)/1.75)/3.75))))
+      win.blit(text,(((((width//16)/4)+(width//16)*i)+(((width//16)/1.75)/4)),(750+(((width//16)/1.75)/3.75))))
 
     for i in range(levels):
         if(i%2==0):
@@ -281,8 +281,84 @@ def NegaMax(node, player, depth):
                 pygame.display.update()
              
 
+def NegaMaxAlphaBetaPruning(node, player, depth, alpha, beta):
+        #time.sleep(1)
+        if (depth == 0):
+            pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
+            pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
+            pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
+            font = pygame.font.Font('freesansbold.ttf',12)
+            text = font.render(f"alpha={alpha}", True, (0,0,255),GRAY)
+            win.blit(text,((node.x)-23,(node.y-(node.radius*2))))
+            text = font.render(f"beta={beta}", True, (0,0,255),GRAY)
+            win.blit(text,((node.x)-23,(node.y-(node.radius*2)+14)))
+            pygame.display.update()
+            NegaMaxAlphaBetaPruning(node.getLeft(),-1*player,node.getDepth()+1,-beta, -alpha)
+            pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
+            pygame.display.update()
+            NegaMaxAlphaBetaPruning(node.getRight(),-1*player,node.getDepth()+1,-beta, -alpha)
+            L=node.getLeft()
+            R=node.getRight()
+            if(node.value==None):
+                if((-1*R.getValue())>(-1*L.getValue())):
+                    node.value=-1*R.value
+                    drawPath(node,R,L)
+                else:
+                    node.value=-1*L.value
+                    drawPath(node,L,R)
 
+            
+            pygame.draw.circle(win,(150,0,0),node.getLoc(),node.getRaduis())
+            font = pygame.font.Font('freesansbold.ttf',20)
+            text = font.render(f"{node.value}", True, (255,255,255))
+            win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))            
+            pygame.display.update()                    
+            time.sleep(500000)
+        else:
+            if(depth == 4):
+                if(player==-1):node.value=-1*node.value
+                pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
+                font = pygame.font.Font('freesansbold.ttf',20)
+                text = font.render(f"{node.value}", True, (255,255,255))
+                win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))
+                font = pygame.font.Font('freesansbold.ttf',12)
+                text = font.render(f"alpha={alpha}", True, (0,0,255),GRAY)
+                win.blit(text,((node.x)-23,(node.y+(node.radius*2)-27)))
+                text = font.render(f"beta={beta}", True, (0,0,255),GRAY)
+                win.blit(text,((node.x)-23,(node.y+(node.radius*2)-14)))
+                pygame.display.update()
+
+            else:
+                pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
+                pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
+                pygame.display.update()
+                NegaMaxAlphaBetaPruning(node.getLeft(),-1*player,node.getDepth()+1,-beta, -alpha)
+                pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
+                pygame.display.update()
+                NegaMaxAlphaBetaPruning(node.getRight(),-1*player,node.getDepth()+1,-beta, -alpha)
+                L=node.getLeft()
+                R=node.getRight()
+                if(node.value==None):
+                         if((-1*R.getValue())>(-1*L.getValue())):
+                            node.value=-1*R.value
+                            drawPath(node,R,L)
+                            drawAlphaBeta(node,alpha,beta)
+                         else:
+                            node.value=-1*L.value
+                            drawPath(node,L,R)
+                            drawAlphaBeta(node,alpha,beta)
+                font = pygame.font.Font('freesansbold.ttf',20)
+                text = font.render(f"{node.value}", True, (255,255,255))
+                win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))
+                pygame.display.update()
+             
                 
+def drawAlphaBeta(node,alpha,beta,x,y):
+    font = pygame.font.Font('freesansbold.ttf',12)
+    text = font.render(f"alpha={alpha}", True, (0,0,255),GRAY)
+    win.blit(text,((node.x)-23,(node.y-(node.radius*2)-15)))
+    text = font.render(f"beta={beta}", True, (0,0,255),GRAY)
+    win.blit(text,((node.x)-23,(node.y-(node.radius*2))))
 
 
 
@@ -295,12 +371,14 @@ pygame.display.update()
 levels=5
 nodes= create_nodes(5)
 draw(levels,nodes)
+positive_infinity= float('inf')
+negative_infinity= float('-inf')
 while(True):
    # MiniMax(nodes[0],0)
    # time.sleep(5)
-   # draw(levels,nodes)
+   #' draw(levels,nodes)
 
     if(nodes[0].getMAX()==True):
-        NegaMax(nodes[0],1,0)
+        NegaMaxAlphaBetaPruning(nodes[0],1,0,positive_infinity,negative_infinity)
     else:
-        NegaMax(nodes[0],-1,0)
+        NegaMaxAlphaBetaPruning(nodes[0],-1,0,positive_infinity,negative_infinity)
