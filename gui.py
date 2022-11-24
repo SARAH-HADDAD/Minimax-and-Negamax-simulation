@@ -8,6 +8,8 @@ win=pygame.display.set_mode((1450,800))
 pygame.display.set_caption("GUI")
 COLOR=(100,100,100)
 GRAY=(150,150,150)
+RED=(150,0,0)
+BLUE=(0,0,150)
 values = [10, 5, 7, 11, 12, 8, 9, 8, 5, 12, 11, 12, 9, 8, 7, 10]
 class Node():
     def __init__(self,x,y,radius, color, left, right, value,Max, depth,p,alpha,beta):
@@ -287,12 +289,12 @@ def NegaMax(node, player, depth):
              
 
 def NegaMaxAlphaBetaPruning(node, player, depth):
-        #time.sleep(1)
+        time.sleep(1)
         if (depth == 0):
             pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
             pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
             pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
-            drawAlphaBeta(node,node.alpha,node.beta,(node.x)-23,(node.y-(node.radius*2)),(node.x)-23,(node.y-(node.radius*2)+14))
+            #DisplayAlphaBeta(node,node.alpha,node.beta,(node.x)-23,(node.y-(node.radius*2)),(node.x)-23,(node.y-(node.radius*2)+14))
             pygame.display.update()
             NegaMaxAlphaBetaPruning(node.getLeft(),-1*player,node.getDepth()+1)
             pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
@@ -305,20 +307,15 @@ def NegaMaxAlphaBetaPruning(node, player, depth):
                 node.value=-R.value
                 node.alpha=-R.getValue()
                 drawPath(node,R,L)
-                drawAlphaBeta(node,node.alpha,node.beta,(node.x)-23,node.y-(node.radius*2)-15,(node.x)-23,(node.y-(node.radius*2)))
             else:
                 node.value=-L.getValue()
                 node.alpha=-L.getValue()
                 drawPath(node,L,R)
-                drawAlphaBeta(node,node.alpha,node.beta,(node.x)-23,node.y-(node.radius*2)-15,(node.x)-23,(node.y-(node.radius*2)))
-
-
-            
+            DisplayBeta(R.beta,(R.x)-23,(R.y-(R.radius*2)),BLUE)     
+            DisplayAlpha(node.alpha,(node.x)-23,(node.y-(node.radius*2)),RED)
+            DisplayBeta(node.beta,(node.x)-23,(node.y-(node.radius*2)+14),BLUE)      
             pygame.draw.circle(win,(150,0,0),node.getLoc(),node.getRaduis())
-            font = pygame.font.Font('freesansbold.ttf',20)
-            text = font.render(f"{node.value}", True, (255,255,255))
-            win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))            
-            pygame.display.update()                    
+            DisplayValue(node)            
             time.sleep(500000)
         else:
             if(depth == 4):
@@ -326,12 +323,8 @@ def NegaMaxAlphaBetaPruning(node, player, depth):
                     R.value=-R.getValue()
                     L.value=-L.getValue()
                 pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
-                font = pygame.font.Font('freesansbold.ttf',20)
-                text = font.render(f"{node.value}", True, (255,255,255))
-                win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))
-                drawAlphaBeta(node,node.alpha,node.beta,(node.x)-23,(node.y+(node.radius*2)-27),(node.x)-23,(node.y+(node.radius*2)-14))
+                DisplayValue(node)
                 pygame.display.update()
-
             else:
                 pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
                 pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
@@ -342,30 +335,49 @@ def NegaMaxAlphaBetaPruning(node, player, depth):
                 NegaMaxAlphaBetaPruning(node.getRight(),-1*player,node.getDepth()+1)
                 L=node.getLeft()
                 R=node.getRight()
-                R.beta=L.value
+                R.beta=L.value 
+                #if(node.beta<node.alpha):
                 if((R.beta>R.getValue())):
                     node.value=-R.value
                     node.alpha=-R.getValue()
                     drawPath(node,R,L)
-                    drawAlphaBeta(node,node.alpha,node.beta,(node.x)-23,node.y-(node.radius*2)-15,(node.x)-23,(node.y-(node.radius*2)))
                 else:
                     node.value=-L.getValue()
                     node.alpha=-L.getValue()
                     drawPath(node,L,R)
-                    drawAlphaBeta(node,node.alpha,node.beta,(node.x)-23,node.y-(node.radius*2)-15,(node.x)-23,(node.y-(node.radius*2)))
-                font = pygame.font.Font('freesansbold.ttf',20)
-                text = font.render(f"{node.value}", True, (255,255,255))
-                win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))
-                pygame.display.update()
+                DisplayValue(node)  
+                DisplayAlpha(node.alpha,(node.x)-23,node.y-(node.radius*2)-15,RED)
+                if(depth==3):
+                    DisplayAlpha(L.alpha,(L.x)-23,(L.y+(L.radius*2)-27),BLUE)   
+                    DisplayBeta(L.beta,(L.x)-23,(L.y+(node.radius*2)-14),BLUE) 
+                    DisplayAlpha(R.alpha,(R.x)-23,(R.y+(R.radius*2)-27),BLUE)   
+                    DisplayBeta(R.beta,(R.x)-23,(R.y+(node.radius*2)-14),BLUE) 
+                else: DisplayBeta(R.beta,(R.x)-23,(R.y-(R.radius*2)),BLUE) 
+                
+                    
+
+
+                    
              
     
-def drawAlphaBeta(node,alpha,beta,xa,ya,xb,yb):
+def DisplayAlpha(alpha,x,y,Color):
     font = pygame.font.Font('freesansbold.ttf',12)
-    text = font.render(f"alpha={alpha}", True, (0,0,255))
-    win.blit(text,((xa,ya)))
-    text = font.render(f"beta={beta}", True, (0,0,255))
-    win.blit(text,((xb,yb)))
+    text = font.render(f"alpha={alpha}", True, Color,GRAY)
+    win.blit(text,((x,y)))
+    
 
+def DisplayBeta(beta,x,y,Color):
+        font = pygame.font.Font('freesansbold.ttf',12)
+        text = font.render(f"beta={beta}", True, Color,GRAY)
+        win.blit(text,((x,y)))
+
+    
+
+def DisplayValue(node):
+     font = pygame.font.Font('freesansbold.ttf',20)
+     text = font.render(f"{node.value}", True, (255,255,255))
+     win.blit(text,((node.x-(node.radius/4)),(node.y-(node.radius/4))))
+     pygame.display.update()
 
 
 
