@@ -319,9 +319,13 @@ def NegaMaxAlphaBetaPruning(node, player, depth):
             time.sleep(500000)
         else:
             if(depth == 4):
+                #node.alpha=-node.p.alpha
+                #node.beta=-node.p.beta
                 if(player==-1):
-                    R.value=-R.getValue()
-                    L.value=-L.getValue()
+                    node.value=-node.getValue()
+                    node.value=-node.getValue()
+                #DisplayAlpha(node.alpha,(node.x)-23,(node.y+(node.radius*2)-27),BLUE)   
+                #DisplayBeta(node.beta,(node.x)-23,(node.y+(node.radius*2)-14),BLUE)     
                 pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
                 DisplayValue(node)
                 pygame.display.update()
@@ -333,26 +337,35 @@ def NegaMaxAlphaBetaPruning(node, player, depth):
                 pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
                 pygame.display.update()
                 NegaMaxAlphaBetaPruning(node.getRight(),-1*player,node.getDepth()+1)
+                node.alpha=-node.p.beta
+                node.beta=-node.p.alpha
+                DisplayAlpha(node.alpha,(node.x)-23,node.y-(node.radius*2)-15,RED)
+                DisplayBeta(node.beta,(node.x)-23,(node.y-(node.radius*2)),BLUE) 
                 L=node.getLeft()
                 R=node.getRight()
                 R.beta=L.value 
-                #if(node.beta<node.alpha):
-                if((R.beta>R.getValue())):
-                    node.value=-R.value
-                    node.alpha=-R.getValue()
-                    drawPath(node,R,L)
+                if(node.beta<=node.alpha):
+                    pygame.draw.circle(win,(0,0,0),node.getLoc(),node.getRaduis())
                 else:
-                    node.value=-L.getValue()
-                    node.alpha=-L.getValue()
-                    drawPath(node,L,R)
-                DisplayValue(node)  
-                DisplayAlpha(node.alpha,(node.x)-23,node.y-(node.radius*2)-15,RED)
-                if(depth==3):
-                    DisplayAlpha(L.alpha,(L.x)-23,(L.y+(L.radius*2)-27),BLUE)   
-                    DisplayBeta(L.beta,(L.x)-23,(L.y+(node.radius*2)-14),BLUE) 
-                    DisplayAlpha(R.alpha,(R.x)-23,(R.y+(R.radius*2)-27),BLUE)   
-                    DisplayBeta(R.beta,(R.x)-23,(R.y+(node.radius*2)-14),BLUE) 
-                else: DisplayBeta(R.beta,(R.x)-23,(R.y-(R.radius*2)),BLUE) 
+                    if((R.beta>R.getValue())):
+                        node.value=-R.value
+                        node.alpha=-R.getValue()
+                        drawPath(node,R,L)
+                    else:
+                        node.value=-L.getValue()
+                        node.alpha=-L.getValue()
+                        drawPath(node,L,R)
+                    DisplayValue(node)  
+                    DisplayAlpha(node.alpha,(node.x)-23,node.y-(node.radius*2)-15,RED)
+                    DisplayBeta(node.beta,(node.x)-23,(node.y-(node.radius*2)),BLUE) 
+                    if(depth==3):
+                        DisplayAlpha(L.alpha,(L.x)-23,(L.y+(L.radius*2)-27),BLUE)   
+                        DisplayBeta(L.beta,(L.x)-23,(L.y+(node.radius*2)-14),BLUE) 
+                        DisplayAlpha(R.alpha,(R.x)-23,(R.y+(R.radius*2)-27),BLUE)   
+                        DisplayBeta(R.beta,(R.x)-23,(R.y+(node.radius*2)-14),BLUE) 
+                    else: 
+                        DisplayBeta(R.beta,(R.x)-23,(R.y-(R.radius*2)),BLUE) 
+                        DisplayBeta(L.beta,(L.x)-23,(L.y-(L.radius*2)),BLUE) 
                 
                     
 
@@ -362,13 +375,16 @@ def NegaMaxAlphaBetaPruning(node, player, depth):
     
 def DisplayAlpha(alpha,x,y,Color):
     font = pygame.font.Font('freesansbold.ttf',12)
-    text = font.render(f"alpha={alpha}", True, Color,GRAY)
+    if(alpha==negative_infinity or alpha==positive_infinity):text = font.render(f"alpha={alpha}", True, Color,GRAY)
+    else:  text = font.render(f"alpha={alpha}    ", True, Color,GRAY)
     win.blit(text,((x,y)))
     
 
 def DisplayBeta(beta,x,y,Color):
         font = pygame.font.Font('freesansbold.ttf',12)
-        text = font.render(f"beta={beta}", True, Color,GRAY)
+        if(beta==negative_infinity or beta==positive_infinity):
+            text = font.render(f"beta={beta}", True, Color,GRAY)
+        else:  text = font.render(f"beta={beta}    ", True, Color,GRAY)
         win.blit(text,((x,y)))
 
     
@@ -400,4 +416,6 @@ while(True):
         NegaMaxAlphaBetaPruning(nodes[0],1,0)
     else:
         NegaMaxAlphaBetaPruning(nodes[0],-1,0)
+                
+
 
