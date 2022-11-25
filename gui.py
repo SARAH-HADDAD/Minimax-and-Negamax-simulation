@@ -5,7 +5,6 @@ import button
 # Create game window
 width=1300
 length=760
-win=pygame
 win=pygame.display.set_mode((1450,800))
 pygame.display.set_caption("GUI")
 # Game variables
@@ -13,6 +12,7 @@ COLOR=(100,100,100)
 GRAY=(150,150,150)
 RED=(150,0,0)
 BLUE=(0,0,150)
+BLACK=(0,0,0)
 values = [10, 5, 7, 11, 12, 8, 9, 8, 5, 12, 11, 12, 9, 8, 7, 10]
 menu_state = "main"
 # Load button images
@@ -22,11 +22,11 @@ MiniMax_img=pygame.image.load("images/MiniMax.png")
 NegaMax_img=pygame.image.load("images/NegaMax.png")
 NegaMaxWithAlphaBeta_img=pygame.image.load("images/NegaMax with Alpha-Beta Pruning.png")
 # Create button instances
-Min_button=button.Button((1300/2)-(MiniMax_img.get_width()/2),760/3,Min_img,1)
-Max_button=button.Button((1300/2)-(MiniMax_img.get_width()/2),(760*2)/3,Max_img,1)
-MiniMax_button=button.Button((1300/2)-(MiniMax_img.get_width()/2),760/4,MiniMax_img,1)
-NegaMax_button=button.Button((1300/2)-(NegaMax_img.get_width()/2),760/2,NegaMax_img,1)
-NegaMaxWithAlphaBeta_button=button.Button((1300/2)-(NegaMaxWithAlphaBeta_img.get_width()/2),(760*3)/4,NegaMaxWithAlphaBeta_img,1)
+Min_button=button.Button((1400/2)-(MiniMax_img.get_width()/2),800/3,Min_img,1)
+Max_button=button.Button((1400/2)-(MiniMax_img.get_width()/2),(800*2)/3,Max_img,1)
+MiniMax_button=button.Button((1400/2)-(MiniMax_img.get_width()/2),800/4,MiniMax_img,1)
+NegaMax_button=button.Button((1400/2)-(NegaMax_img.get_width()/2),800/2,NegaMax_img,1)
+NegaMaxWithAlphaBeta_button=button.Button((1400/2)-(NegaMaxWithAlphaBeta_img.get_width()/2),(760*3)/4,NegaMaxWithAlphaBeta_img,1)
 class Node():
     def __init__(self,x,y,radius, color, left, right, value, depth,p,alpha,beta):
         # la position du nœud dans l’interface graphique:
@@ -250,7 +250,7 @@ pygame.display.update()
 levels=5
 nodes= create_nodes(5)
 player=1
-win.fill(GRAY)
+win.fill(BLACK)
 pygame.display.update()
 positive_infinity= float('inf')
 negative_infinity= float('-inf')
@@ -259,7 +259,7 @@ run = True
 while run:
    # time.sleep(5)  
     if MiniMax_button.draw(win): 
-        win.fill(GRAY)
+        win.fill(BLACK)
         while (True): 
             if Min_button.draw(win):
                 win.fill(GRAY)
@@ -285,7 +285,7 @@ while run:
         
     if NegaMax_button.draw(win):  
         print("negamax")
-        win.fill(GRAY)
+        win.fill(BLACK)
         while (True): 
             if Min_button.draw(win):
                 win.fill(GRAY)
