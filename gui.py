@@ -192,15 +192,15 @@ def DisplayValue(node,Color):
 def MiniMax(node, depth,player):
         if(depth==4):
            DisplayValue(node,BLUE)
-           time.sleep(0.5)
+           time.sleep(0.7)
         else:
             pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
             pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
             MiniMax(node.getLeft(),node.getDepth()+1,-player)
-            time.sleep(0.5)
+            time.sleep(0.7)
             pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
             MiniMax(node.getRight(),node.getDepth()+1,-player)
-            time.sleep(0.5)
+            time.sleep(0.7)
             L=node.getLeft()
             R=node.getRight()
             if(player==1):
@@ -218,7 +218,7 @@ def MiniMax(node, depth,player):
                     node.value=L.value
                     drawPath(node,L,R)     
             DisplayValue(node,RED)
-            time.sleep(0.5)                                    
+            time.sleep(0.7)                                    
         
 
              
@@ -242,12 +242,29 @@ run = True
 while run:
    # time.sleep(5)  
     if MiniMax_button.draw(win): 
-        pygame.display.update()
         win.fill(GRAY)
-        draw(levels,nodes,player) 
-        MiniMax(nodes[0],0,player)
-        time.sleep(50)
-        run = False
+        while (True): 
+            if Min_button.draw(win):
+                win.fill(GRAY)
+                pygame.display.update()
+                draw(levels,nodes,-1)
+                pygame.display.update()
+                time.sleep(0.7)
+                MiniMax(nodes[0],0,-1)
+                time.sleep(50)
+                pygame.quit()
+            if Max_button.draw(win):  
+                win.fill(GRAY)
+                pygame.display.update()
+                draw(levels,nodes,1)
+                pygame.display.update()
+                time.sleep(0.7) 
+                MiniMax(nodes[0],0,1)
+                time.sleep(50)
+                pygame.quit()  
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:pygame.quit()
+            pygame.display.update()     
         
     if NegaMax_button.draw(win):   print("nigamax")
     if NegaMaxWithAlphaBeta_button.draw(win):   print("alpha beta")
