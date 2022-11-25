@@ -1,16 +1,32 @@
 import pygame 
-import math
 import time
+import button
+
+# Create game window
 width=1300
 length=760
 win=pygame
 win=pygame.display.set_mode((1450,800))
 pygame.display.set_caption("GUI")
+# Game variables
 COLOR=(100,100,100)
 GRAY=(150,150,150)
 RED=(150,0,0)
 BLUE=(0,0,150)
 values = [10, 5, 7, 11, 12, 8, 9, 8, 5, 12, 11, 12, 9, 8, 7, 10]
+menu_state = "main"
+# Load button images
+Min_img=pygame.image.load("images/MIN.png")
+Max_img=pygame.image.load("images/MAX.png")
+MiniMax_img=pygame.image.load("images/MiniMax.png")
+NegaMax_img=pygame.image.load("images/NegaMax.png")
+NegaMaxWithAlphaBeta_img=pygame.image.load("images/NegaMax with Alpha-Beta Pruning.png")
+# Create button instances
+Min_button=button.Button((1300/2)-(MiniMax_img.get_width()/2),760/3,Min_img,1)
+Max_button=button.Button((1300/2)-(MiniMax_img.get_width()/2),(760*2)/3,Max_img,1)
+MiniMax_button=button.Button((1300/2)-(MiniMax_img.get_width()/2),760/4,MiniMax_img,1)
+NegaMax_button=button.Button((1300/2)-(NegaMax_img.get_width()/2),760/2,NegaMax_img,1)
+NegaMaxWithAlphaBeta_button=button.Button((1300/2)-(NegaMaxWithAlphaBeta_img.get_width()/2),(760*3)/4,NegaMaxWithAlphaBeta_img,1)
 class Node():
     def __init__(self,x,y,radius, color, left, right, value, depth,p,alpha,beta):
         # la position du nœud dans l’interface graphique:
@@ -126,6 +142,7 @@ def draw(levels,nodes,player):
       win.blit(text,(((((width//16)/4)+(width//16)*i)+(((width//16)/1.75)/4)),(750+(((width//16)/1.75)/3.75))))
     #Display min max   
     minmax=player
+    font = pygame.font.Font('freesansbold.ttf',25)
     for i in range(levels):
         if(minmax==1):
             text = font.render("MAX", True, COLOR)
@@ -173,17 +190,17 @@ def DisplayValue(node,Color):
      pygame.display.update()
 
 def MiniMax(node, depth,player):
-        time.sleep(1)
         if(depth==4):
            DisplayValue(node,BLUE)
+           time.sleep(0.5)
         else:
             pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
             pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
-            #pygame.display.update()
             MiniMax(node.getLeft(),node.getDepth()+1,-player)
+            time.sleep(0.5)
             pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
-            #pygame.display.update()
             MiniMax(node.getRight(),node.getDepth()+1,-player)
+            time.sleep(0.5)
             L=node.getLeft()
             R=node.getRight()
             if(player==1):
@@ -200,7 +217,8 @@ def MiniMax(node, depth,player):
                 else:
                     node.value=L.value
                     drawPath(node,L,R)     
-            DisplayValue(node,RED)                                    
+            DisplayValue(node,RED)
+            time.sleep(0.5)                                    
         
 
              
@@ -211,19 +229,44 @@ def MiniMax(node, depth,player):
     
 
 pygame.init()
-win.fill(GRAY)
 pygame.display.update()
 levels=5
 nodes= create_nodes(5)
-draw(levels,nodes,-1)
+player=1
+win.fill(GRAY)
+pygame.display.update()
 positive_infinity= float('inf')
 negative_infinity= float('-inf')
-while(True):
-   # time.sleep(5)
-    MiniMax(nodes[0],0,-1)
-    time.sleep(50)
+#game loop
+run = True
+while run:
+   # time.sleep(5)  
+    if MiniMax_button.draw(win): 
+        pygame.display.update()
+        win.fill(GRAY)
+        draw(levels,nodes,player) 
+        MiniMax(nodes[0],0,player)
+        time.sleep(50)
+        run = False
+        
+    if NegaMax_button.draw(win):   print("nigamax")
+    if NegaMaxWithAlphaBeta_button.draw(win):   print("alpha beta")
+    pygame.display.update()
+    
+    
+    #event handler
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+           
+pygame.quit()            
 
-                
+    
+      
+
+  
+
+               
 
   
         
