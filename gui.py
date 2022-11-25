@@ -288,84 +288,56 @@ def NegaMax(node, player, depth):
                 pygame.display.update()
              
 
-def NegaMaxAlphaBetaPruning(node, player, depth):
-        time.sleep(1)
-        if (depth == 0):
-            pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
-            pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
-            pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
-            #DisplayAlphaBeta(node,node.alpha,node.beta,(node.x)-23,(node.y-(node.radius*2)),(node.x)-23,(node.y-(node.radius*2)+14))
-            pygame.display.update()
-            NegaMaxAlphaBetaPruning(node.getLeft(),-1*player,node.getDepth()+1)
-            pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
-            pygame.display.update()
-            NegaMaxAlphaBetaPruning(node.getRight(),-1*player,node.getDepth()+1)
-            L=node.getLeft()
-            R=node.getRight()
-            R.beta=L.value   
-            if((R.beta>R.getValue())):
-                node.value=-R.value
-                node.alpha=-R.getValue()
-                drawPath(node,R,L)
-            else:
-                node.value=-L.getValue()
-                node.alpha=-L.getValue()
-                drawPath(node,L,R)
-            DisplayBeta(R.beta,(R.x)-23,(R.y-(R.radius*2)),BLUE)     
-            DisplayAlpha(node.alpha,(node.x)-23,(node.y-(node.radius*2)),RED)
-            DisplayBeta(node.beta,(node.x)-23,(node.y-(node.radius*2)+14),BLUE)      
-            pygame.draw.circle(win,(150,0,0),node.getLoc(),node.getRaduis())
-            DisplayValue(node)            
-            time.sleep(500000)
-        else:
-            if(depth == 4):
-                #node.alpha=-node.p.alpha
-                #node.beta=-node.p.beta
-                if(player==-1):
-                    node.value=-node.getValue()
-                    node.value=-node.getValue()
-                #DisplayAlpha(node.alpha,(node.x)-23,(node.y+(node.radius*2)-27),BLUE)   
-                #DisplayBeta(node.beta,(node.x)-23,(node.y+(node.radius*2)-14),BLUE)     
-                pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
-                DisplayValue(node)
-                pygame.display.update()
-            else:
-                pygame.draw.circle(win,(0,0,150),node.getLoc(),node.getRaduis())
-                pygame.draw.line(win,(0,0,150),node.getLoc(),node.getLeft().getLoc(),5)
-                pygame.display.update()
-                NegaMaxAlphaBetaPruning(node.getLeft(),-1*player,node.getDepth()+1)
-                pygame.draw.line(win,(0,0,150),node.getLoc(),node.getRight().getLoc(),5)
-                pygame.display.update()
-                NegaMaxAlphaBetaPruning(node.getRight(),-1*player,node.getDepth()+1)
-                node.alpha=-node.p.beta
-                node.beta=-node.p.alpha
-                DisplayAlpha(node.alpha,(node.x)-23,node.y-(node.radius*2)-15,RED)
-                DisplayBeta(node.beta,(node.x)-23,(node.y-(node.radius*2)),BLUE) 
-                L=node.getLeft()
-                R=node.getRight()
-                R.beta=L.value 
-                if(node.beta<=node.alpha):
-                    pygame.draw.circle(win,(0,0,0),node.getLoc(),node.getRaduis())
-                else:
-                    if((R.beta>R.getValue())):
-                        node.value=-R.value
-                        node.alpha=-R.getValue()
-                        drawPath(node,R,L)
-                    else:
-                        node.value=-L.getValue()
-                        node.alpha=-L.getValue()
-                        drawPath(node,L,R)
-                    DisplayValue(node)  
-                    DisplayAlpha(node.alpha,(node.x)-23,node.y-(node.radius*2)-15,RED)
-                    DisplayBeta(node.beta,(node.x)-23,(node.y-(node.radius*2)),BLUE) 
-                    if(depth==3):
-                        DisplayAlpha(L.alpha,(L.x)-23,(L.y+(L.radius*2)-27),BLUE)   
-                        DisplayBeta(L.beta,(L.x)-23,(L.y+(node.radius*2)-14),BLUE) 
-                        DisplayAlpha(R.alpha,(R.x)-23,(R.y+(R.radius*2)-27),BLUE)   
-                        DisplayBeta(R.beta,(R.x)-23,(R.y+(node.radius*2)-14),BLUE) 
-                    else: 
-                        DisplayBeta(R.beta,(R.x)-23,(R.y-(R.radius*2)),BLUE) 
-                        DisplayBeta(L.beta,(L.x)-23,(L.y-(L.radius*2)),BLUE) 
+def NegaMaxAlphaBetaPruning(node:Node, player:int, depth:int, alpha:int, beta:int,surface):
+
+    MAX = 1
+    MIN = -1
+
+    node.alpha = alpha
+    node.beta = beta
+
+    node
+    # Initially, depth=5, alpha=-inf and beta=+inf
+    if depth == 1:
+        if player == MIN:
+            node.value = -node.value
+        # Display the current node’s value and mark it as explored
+        node.displayValue(surface)
+        # Display the values of alpha and beta
+
+    else:
+        # Mark the current node as explored
+        node.visited(surface)
+        # Display the values of alpha and beta
+
+        listChildren = [node.leftChild, node.rightChild]
+        bestValue = float('-inf')
+        bestPath = None
+        for child in listChildren:
+            # Mark the link between the current node and the child node as explored
+            child.visited_link(surface,node)
+
+            NegaMaxAlphaBetaPruning(child, -player, depth-1, -beta, -alpha,surface)
+            child.value = -child.value
+
+            child.visited(surface)
+
+            if child.value > bestValue:
+                bestValue = child.value
+                bestPath = child
+            if bestValue > alpha:
+                alpha = bestValue
+                # Display the new value of alpha
+                Node.displayAlphaBeta(surface,node)
+            if beta <= alpha:
+                break
+        node.value = bestValue
+        node.path = bestPath
+        # Display the best path and the current node’s value
+        node.route(surface,node.path)
+        #node.displayValue(surface)
+
+
                 
                     
 
@@ -416,6 +388,11 @@ while(True):
         NegaMaxAlphaBetaPruning(nodes[0],1,0)
     else:
         NegaMaxAlphaBetaPruning(nodes[0],-1,0)
+                
+
+  
+        
+            
                 
 
 
