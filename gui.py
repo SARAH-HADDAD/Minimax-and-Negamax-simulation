@@ -29,7 +29,7 @@ NegaMax_button=button.Button((1400/2)-(NegaMax_img.get_width()/2),800/2,NegaMax_
 NegaMaxWithAlphaBeta_button=button.Button((1400/2)-(NegaMaxWithAlphaBeta_img.get_width()/2),(760*3)/4,NegaMaxWithAlphaBeta_img,1)
 class Node():
     def __init__(self,x,y,radius, color, left, right, value, depth,p,alpha,beta):
-        # la position du nœud dans l’interface graphique:
+        # The position of the node in the graphical interface:
         self.x=x
         self.y=y
         self.radius=radius
@@ -84,7 +84,7 @@ class Node():
     def setpere(self, p):
         self.p=p
 
-#La fonction qui va créer un arbre binaire dont tous les nœuds sont initialement vides:
+# The function that will create a binary tree whose nodes are initially empty:
 def create_nodes(levels):
     nodes=[]
     values = [10, 5, 7, 11, 12, 8, 9, 8, 5, 12, 11, 12, 9, 8, 7, 10]
@@ -153,8 +153,8 @@ def draw(levels,nodes,player):
         minmax=-minmax    
     pygame.display.update()
 def drawPath(node,W,L):
-    #W : winner en rouge
-    #L : loser en blue
+    #W : winner 
+    #L : loser 
     pygame.draw.line(win,(0,0,150),node.getLoc(),L.getLoc(),5)
     pygame.draw.line(win,(150,0,0),node.getLoc(),W.getLoc(),5)
     pygame.draw.circle(win,(150,0,0),W.getLoc(),node.getRaduis())
@@ -165,13 +165,10 @@ def drawPath(node,W,L):
     text = font.render(f"{L.value}", True, (255,255,255))
     win.blit(text,((L.x-(W.radius/4)),(L.y-(W.radius/4))))
 def drawBestPath(node,W):
-    #W : winner en rouge
     if(node.getLeft()==W): 
         L=node.getRight()
     else:
         L=node.getLeft()
-    #W : winner en rouge
-    #L : loser en blue
     pygame.draw.line(win,(0,0,150),node.getLoc(),L.getLoc(),5)
     #pygame.draw.line(win,(150,0,0),node.getLoc(),W.getLoc(),5)
     pygame.draw.circle(win,(150,0,0),W.getLoc(),node.getRaduis())
