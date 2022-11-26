@@ -281,7 +281,7 @@ def NegaMax(node,depth,player):
 
 
 def NegaMaxAlphaBetaPruning(node,depth,player,alpha,beta):
-    time.sleep(0.5)
+    #time.sleep(0.5)
     if depth == 0:
         if(player==-1):node.value = - node.value      
         #// Display the values of alpha and beta
