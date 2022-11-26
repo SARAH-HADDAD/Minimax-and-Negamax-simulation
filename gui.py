@@ -172,13 +172,14 @@ def drawBestPath(node,W):
         L=node.getLeft()
     #W : winner en rouge
     #L : loser en blue
-    pygame.draw.line(win,(0,0,150),node.getLoc(),L.getLoc(),5)
+    
     pygame.draw.line(win,(150,0,0),node.getLoc(),W.getLoc(),5)
     pygame.draw.circle(win,(150,0,0),W.getLoc(),node.getRaduis())
     font = pygame.font.Font('freesansbold.ttf',20)
     text = font.render(f"{-W.value}", True, (255,255,255))
     win.blit(text,((W.x-(W.radius/4)),(W.y-(node.radius/4))))
     if(L.value!=None):
+        pygame.draw.line(win,(0,0,150),node.getLoc(),L.getLoc(),5)
         pygame.draw.circle(win,(0,0,150),L.getLoc(),node.getRaduis())
         text = font.render(f"{-L.value}", True, (255,255,255))
         win.blit(text,((L.x-(L.radius/4)),(L.y-(node.radius/4))))
@@ -298,6 +299,7 @@ def NegaMaxAlphaBetaPruning(node,depth,player,alpha,beta):
         DisplayAlpha(alpha,BLUE,node)
         DisplayBeta(beta,BLUE,node)
         DisplayValue(node,BLUE)
+        time.sleep(0.3)
         pygame.display.update()
         listChildren = [node.left, node.right]
         bestValue =float('-inf')
@@ -320,11 +322,10 @@ def NegaMaxAlphaBetaPruning(node,depth,player,alpha,beta):
                 if beta <= alpha:
                     break
                 node.value = bestValue
-                print(node.depth,node.value,bestPath.value)
                 #// Display the best path and the current node’s value
                 drawBestPath(node,bestPath) 
-                DisplayValue(node,RED)  
-
+                DisplayValue(node,RED)
+                time.sleep(0.3)
 
 
 
@@ -333,19 +334,99 @@ pygame.display.update()
 levels=5
 nodes= create_nodes(5)
 player=1
-win.fill(GRAY)
+win.fill(BLACK)
 pygame.display.update()
 positive_infinity= float('inf')
 negative_infinity= float('-inf')
-while(True):
+#game loop
+run = True
+while run:
+   # time.sleep(5)  
+    if MiniMax_button.draw(win): 
+        win.fill(BLACK)
+        while (True): 
+            if Min_button.draw(win):
+                win.fill(GRAY)
+                pygame.display.update()
+                draw(levels,nodes,-1)
+                pygame.display.update()
+                time.sleep(0.7)
+                MiniMax(nodes[0],0,-1)
+                time.sleep(50)
+                pygame.quit()
+            if Max_button.draw(win):  
+                win.fill(GRAY)
+                pygame.display.update()
+                draw(levels,nodes,1)
+                pygame.display.update()
+                time.sleep(0.7) 
+                MiniMax(nodes[0],0,1)
+                time.sleep(50)
+                pygame.quit()  
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:pygame.quit()
+            pygame.display.update()     
+        
+    if NegaMax_button.draw(win):  
+        print("negamax")
+        win.fill(BLACK)
+        while (True): 
+            if Min_button.draw(win):
+                win.fill(GRAY)
+                pygame.display.update()
+                draw(levels,nodes,-1)
+                pygame.display.update()
+                time.sleep(0.7)
+                NegaMax(nodes[0],0,-1)
+                time.sleep(50)
+                pygame.quit()
+            if Max_button.draw(win):  
+                win.fill(GRAY)
+                pygame.display.update()
+                draw(levels,nodes,1)
+                pygame.display.update()
+                time.sleep(0.7) 
+                NegaMax(nodes[0],0,1)
+                time.sleep(50)
+                pygame.quit()  
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:pygame.quit()
+            pygame.display.update()   
 
-   #MiniMax(nodes[0],0)
-   # time.sleep(5)
-   draw(levels,nodes,1)
-   listChildren=[]
-   NegaMaxAlphaBetaPruning(nodes[0],4,1,negative_infinity,positive_infinity)
-   time.sleep(50)
-
+    if NegaMaxWithAlphaBeta_button.draw(win):   
+        print("alpha beta")
+        win.fill(BLACK)
+        while (True):
+            if Min_button.draw(win):
+                win.fill(GRAY)
+                pygame.display.update()
+                draw(levels,nodes,-1)
+                pygame.display.update()
+                time.sleep(0.7)
+                NegaMaxAlphaBetaPruning(nodes[0],4,-1,negative_infinity,positive_infinity)
+                time.sleep(50)
+                pygame.quit()
+            if Max_button.draw(win): 
+                win.fill(GRAY)  
+                pygame.display.update()
+                draw(levels,nodes,1) 
+                pygame.display.update()
+                time.sleep(0.7)
+                NegaMaxAlphaBetaPruning(nodes[0],4,1,negative_infinity,positive_infinity)
+                time.sleep(50)
+                pygame.quit()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:pygame.quit()
+            pygame.display.update()        
+    pygame.display.update()
+    
+    
+    #event handler
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+           
+pygame.quit()
         
 
     
